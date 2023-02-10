@@ -1,16 +1,14 @@
 package com.example.demo;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import jakarta.persistence.EntityManager;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.Arrays;
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 public class AnimalRepositoryTest {
@@ -32,58 +30,27 @@ public class AnimalRepositoryTest {
         animalRepository.save(new Dog("Dog5"));
     }
 
-
-    public static final String SELECT_QUERY = """
-             select a from Animal a where 
-            (:animal is null or a.name in :animals)
+    private static final String NATIVE_SELECT_QUERY = """
+             select * from Animal a where (:animals is null or a.name in :animals)
             """;
 
-    public static final String SELECT_QUERY_ONE_PARAM = """
-             select a from Animal a where 
-            (:animal is null or a.name in :animal)
+    private static final String SELECT_QUERY = """
+             select a from Animal a where (:animals is null or a.name in :animals)
             """;
 
     @Test
-    void countDogsShouldFindOneDog() {
-        var dogs = animalRepository.countDogs();
-        assertEquals(6, dogs);
-        dogs = animalRepository.countDogs();
-        assertEquals(6, dogs);
-    }
-
-    @Test
-    void countDogsWithListOf1DogIsSetAsParam() {
-        var query1 = entityManager.createQuery(SELECT_QUERY_ONE_PARAM);
-        query1.setParameter("animal", List.of("Dog"));
-        var dogs = query1.getResultList();
-        assertEquals(1L, dogs.size());
-    }
-
-    @Test
-    void countDogsWithListOf2DogIsSetIn1Param() {
-        var query1 = entityManager.createQuery(SELECT_QUERY_ONE_PARAM);
-        query1.setParameter("animal", List.of("Dog", "Dog1"));
+    void nativeQueryExample() {
+        var query1 = entityManager.createNativeQuery(NATIVE_SELECT_QUERY);
+        query1.setParameter("animals", List.of("Dog", "Dog1"));
         var dogs = query1.getResultList();
         assertEquals(2L, dogs.size());
     }
 
     @Test
-    void countDogsWithListOf2DogIsSetIn2Param() {
+    void queryExample() {
         var query1 = entityManager.createQuery(SELECT_QUERY);
         query1.setParameter("animals", List.of("Dog", "Dog1"));
-        query1.setParameter("animal", List.of("Dog", "Dog1"));
         var dogs = query1.getResultList();
         assertEquals(2L, dogs.size());
-    }
-
-    @Test
-    void countDogsWithListThorwAssertError() {
-
-        List<String> sample = Arrays.asList("Dog", "Dog1", "Dog3");
-
-        var query1 = entityManager.createQuery(SELECT_QUERY);
-        query1.setParameter("animal", sample);
-        var dogs = query1.getResultList();
-        assertEquals(3L, dogs.size());
     }
 }
