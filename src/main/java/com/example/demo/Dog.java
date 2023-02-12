@@ -9,7 +9,11 @@ import lombok.NoArgsConstructor;
 @DiscriminatorValue("DOG")
 @NoArgsConstructor
 public class Dog extends Animal {
-    public Dog(String name) {
+    public Dog(final String name) {
         super(name);
+    }
+
+    public Dog(final String name, final String name1) {
+        super(name, name1);
     }
 }

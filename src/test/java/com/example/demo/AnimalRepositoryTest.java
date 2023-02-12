@@ -22,16 +22,21 @@ public class AnimalRepositoryTest {
     void setUp() {
         animalRepository.deleteAll();
 
-        animalRepository.save(new Dog("Dog"));
-        animalRepository.save(new Dog("Dog1"));
-        animalRepository.save(new Dog("Dog2"));
-        animalRepository.save(new Dog("Dog3"));
-        animalRepository.save(new Dog("Dog4"));
-        animalRepository.save(new Dog("Dog5"));
+        animalRepository.save(new Dog("Dog","CAT"));
+        animalRepository.save(new Dog("Dog1","CAT1"));
+        animalRepository.save(new Dog("Dog2","CAT2"));
+        animalRepository.save(new Dog("Dog3","CAT3"));
+        animalRepository.save(new Dog("Dog4","CAT4"));
+        animalRepository.save(new Dog("Dog5","CAT5"));
+        animalRepository.save(new Dog("Dog6"));
+        animalRepository.save(new Dog("Dog7",""));
     }
 
     private static final String NATIVE_SELECT_QUERY = """
              select * from Animal a where (:animals is null or a.name in :animals)
+            """;
+    private static final String NATIVE_SELECT_QUERY1 = """
+             select * from Animal a where (:animals is null or a.name in :animals) and  (:animalc is null or a.name1 in :animalc) 
             """;
 
     private static final String SELECT_QUERY = """
@@ -45,6 +50,42 @@ public class AnimalRepositoryTest {
         var dogs = query1.getResultList();
         assertEquals(2L, dogs.size());
     }
+
+    @Test
+    void nativeQueryExample1() {
+        var query1 = entityManager.createNativeQuery(NATIVE_SELECT_QUERY);
+        query1.setParameter("animals", List.of("Dog", ""));
+        var dogs = query1.getResultList();
+        assertEquals(1L, dogs.size());
+    }
+
+    @Test
+    void nativeQueryExample2() {
+        var query1 = entityManager.createNativeQuery(NATIVE_SELECT_QUERY1);
+        query1.setParameter("animals", List.of("Dog"));
+        query1.setParameter("animalc", List.of( "CAT"));
+        var dogs = query1.getResultList();
+        assertEquals(1L, dogs.size());
+    }
+
+    @Test
+    void nativeQueryExample3() {
+        var query1 = entityManager.createNativeQuery(NATIVE_SELECT_QUERY1);
+        query1.setParameter("animals", List.of("Dog6"));
+        query1.setParameter("animalc", List.of( ""));
+        var dogs = query1.getResultList();
+        assertEquals(1L, dogs.size());
+    }
+    @Test
+    void nativeQueryExample4() {
+        var query1 = entityManager.createNativeQuery(NATIVE_SELECT_QUERY1);
+        query1.setParameter("animals", List.of("Dog7"));
+        query1.setParameter("animalc", List.of( ""));
+        var dogs = query1.getResultList();
+        assertEquals(1L, dogs.size());
+    }
+
+
 
     @Test
     void queryExample() {

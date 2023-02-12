@@ -20,8 +20,14 @@ public abstract class Animal {
     @GeneratedValue
     private Long id;
     private String name;
+    private String name1;
 
     public Animal(String name) {
         this.name = name;
+    }
+
+    protected Animal(final String name, final String name1) {
+        this.name = name;
+        this.name1 = name1;
     }
 }
