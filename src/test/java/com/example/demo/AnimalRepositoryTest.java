@@ -76,7 +76,7 @@ public class AnimalRepositoryTest {
     void nativeQueryExample3() {
         var query1 = entityManager.createNativeQuery(NATIVE_SELECT_QUERY1);
         query1.setParameter("animals", List.of("Dog6"));
-        query1.setParameter("animalc", List.of( ""));
+        query1.setParameter("animalc", null);
         var dogs = query1.getResultList();
         assertEquals(1L, dogs.size());
     }
