@@ -43,6 +43,10 @@ public class AnimalRepositoryTest {
              select a from Animal a where (:animals is null or a.name in :animals)
             """;
 
+    private static final String SELECT_QUERY_1 = """
+             select a from Animal a where (:animalsk is null or a.name in :animals) and (:animalck is null or a.name1 in :animalc)
+            """;
+
     @Test
     void nativeQueryExample() {
         var query1 = entityManager.createNativeQuery(NATIVE_SELECT_QUERY);
@@ -84,6 +88,14 @@ public class AnimalRepositoryTest {
         var dogs = query1.getResultList();
         assertEquals(1L, dogs.size());
     }
+    @Test
+    void nativeQueryExample5() {
+        var query1 = entityManager.createNativeQuery(NATIVE_SELECT_QUERY1);
+        query1.setParameter("animals", List.of("Dog5"));
+        query1.setParameter("animalc", null);
+        var dogs = query1.getResultList();
+        assertEquals(1L, dogs.size());
+    }
 
 
 
@@ -93,5 +105,18 @@ public class AnimalRepositoryTest {
         query1.setParameter("animals", List.of("Dog", "Dog1"));
         var dogs = query1.getResultList();
         assertEquals(2L, dogs.size());
+    }
+
+    @Test
+    void nativeExample1() {
+        var query1 = entityManager.createQuery(SELECT_QUERY_1);
+        query1.setParameter("animalsk", List.of("Dog5"));
+        query1.setParameter("animals", List.of( "Dog5"));
+
+        query1.setParameter("animalck", null);
+        query1.setParameter("animalc", null);
+
+        var dogs = query1.getResultList();
+        assertEquals(1L, dogs.size());
     }
 }
