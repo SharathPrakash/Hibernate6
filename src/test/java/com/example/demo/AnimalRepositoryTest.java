@@ -108,7 +108,7 @@ public class AnimalRepositoryTest {
     }
 
     @Test
-    void nativeExample1() {
+    void queryExample1() {
         var query1 = entityManager.createQuery(SELECT_QUERY_1);
         query1.setParameter("animalsk", List.of("Dog5"));
         query1.setParameter("animals", List.of( "Dog5"));
